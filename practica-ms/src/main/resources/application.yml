@@ -1,0 +1,64 @@
+spring:
+  application:
+    name: practica-ms
+
+  profiles:
+    active: default
+
+  config:
+    import: "optional:configserver:http://localhost:7777"
+
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: ${db.maximum-pool-size}
+      connection-timeout: ${db.connection-timeout}
+
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate.format_sql: true
+
+server:
+  port: 0
+  servlet:
+    context-path: /practica-ms
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    hostname: localhost
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+  level:
+    crip.practica.com.pe: INFO
+    feign: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+db:
+  url: jdbc:postgresql://localhost:5435/practicas_db
+  username: practicas
+  password: Pr4ct1c4sM1cr0s3rv1c3
+  maximum-pool-size: 5
+  connection-timeout: 20000

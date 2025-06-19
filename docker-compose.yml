@@ -1,0 +1,65 @@
+services:
+
+
+  db-security:
+    image: mysql:8.0
+    container_name: mysql-security
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: 'security_db'
+      MYSQL_ROOT_PASSWORD: 'S3cur1tyM1cr0S3rv1c3'
+    networks:
+      - ppp-network
+
+  db-personas:
+    image: postgres:16.1
+    container_name: postgres-personas
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: 'personas_db'
+      POSTGRES_USER: 'personas'
+      POSTGRES_PASSWORD: 'P3rs0n4sM1cr0s3rv1c3'
+    networks:
+      - ppp-network
+
+  db-ofertas:
+    image: postgres:16.1
+    container_name: postgres-ofertas
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: 'ofertas_db'
+      POSTGRES_USER: 'ofertas'
+      POSTGRES_PASSWORD: 'Of3rt4sM1cr0s3rv1c3'
+    networks:
+      - ppp-network
+
+  db-practicas:
+    image: postgres:16.1
+    container_name: postgres-practicas
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: 'practicas_db'
+      POSTGRES_USER: 'practicas'
+      POSTGRES_PASSWORD: 'Pr4ct1c4sM1cr0s3rv1c3'
+    networks:
+      - ppp-network
+
+  db-auth-mysql:
+    image: mysql:8.0
+    container_name: mysql-auth
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_DATABASE: 'auth_db'
+      MYSQL_USER: 'authuser'
+      MYSQL_PASSWORD: 'AuthJWT2025'
+      MYSQL_ROOT_PASSWORD: 'RootAuthJWT2025'
+    networks:
+      - ppp-network
+networks:
+  ppp-network:
+    driver: bridge

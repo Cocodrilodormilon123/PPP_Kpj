@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: gateway
+
+  profiles:
+    default: eureka-on  # "eureka-off" para pruebas locales sin Eureka
+
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+
+  web:
+    resources:
+      static-locations: file:./img/
+
+server:
+  port: 4040  # Puerto
+
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: false
+    hostname: localhost
+    instance-id: gateway:${random.value}

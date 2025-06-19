@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    active: default
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/Cocodrilodormilon123/practica-config.git
+          default-label: main
+          clone-on-start: true
+          username: Cocodrilodormilon123
+          password: ${GIT_TOKEN}
+
+server:
+  port: 7777
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    hostname: localhost
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL}
