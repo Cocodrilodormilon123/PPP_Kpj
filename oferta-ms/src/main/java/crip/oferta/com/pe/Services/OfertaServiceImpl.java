@@ -52,7 +52,16 @@ public class OfertaServiceImpl implements OfertaService {
 
     @Override
     public List<Oferta> listarTodo() {
-        return ofertaRepository.findAll();
+        List<Oferta> ofertas = ofertaRepository.findAll();
+
+        for (Oferta oferta : ofertas) {
+            if (oferta.getFechaFin().isBefore(LocalDate.now()) && oferta.getEstado() == EstadoOferta.ACTIVA) {
+                oferta.setEstado(EstadoOferta.FINALIZADA);
+                ofertaRepository.save(oferta); // Guarda el nuevo estado en la base de datos
+            }
+        }
+
+        return ofertas;
     }
 
     @Override
