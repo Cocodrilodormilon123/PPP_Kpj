@@ -34,21 +34,18 @@ public class PersonaController {
             @RequestPart("file") MultipartFile archivo
     ) {
         try {
-            // 📦 Convertir el JSON manualmente (compatible con Blob + application/json)
+            //Convertir el JSON manualmente
             ObjectMapper mapper = new ObjectMapper();
-            mapper.findAndRegisterModules(); // importante para LocalDate
+            mapper.findAndRegisterModules();
             Persona persona = mapper.readValue(personaJson, Persona.class);
 
-            // 🖼 Guardar imagen en carpeta local
             String nombreArchivo = "persona_" + persona.getDni() + "_" + archivo.getOriginalFilename();
             Path rutaDestino = Paths.get("img").resolve(nombreArchivo).toAbsolutePath();
             Files.createDirectories(rutaDestino.getParent());
             Files.copy(archivo.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
 
-            // 📥 Guardar nombre del archivo
             persona.setFoto(nombreArchivo);
 
-            // 💾 Guardar en base de datos
             Persona nueva = personaService.guardar(persona);
             return ResponseEntity.created(URI.create("/personas/" + nueva.getId())).body(nueva);
 
