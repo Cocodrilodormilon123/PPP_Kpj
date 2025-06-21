@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-
 @Transactional
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -38,7 +37,12 @@ public class AuthServiceImpl implements AuthService {
 
         validatePassword(user.getPassword(), userFromDb.getPassword());
 
-        var token = jwtHelper.createToken(userFromDb.getUsername(), userFromDb.getRole());
+        // ✅ Aquí corregido para que el token incluya el ID de persona, no el ID del registro
+        var token = jwtHelper.createToken(
+                userFromDb.getUsername(),
+                userFromDb.getRole(),
+                userFromDb.getIdPersona()
+        );
         return new TokenDto(token);
     }
 
@@ -56,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, USER_EXCEPTION_MSG);
         }
     }
+
     @Override
     public void registerUser(RegisterAuthRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
@@ -64,8 +69,9 @@ public class AuthServiceImpl implements AuthService {
 
         var user = new UserEntity();
         user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword())); //cifrado
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
+        user.setIdPersona(request.getIdPersona()); // ✅ Guardar el ID de la persona vinculada
 
         userRepository.save(user);
     }

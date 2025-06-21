@@ -29,19 +29,19 @@ public class JwtHelper {
         log.info("JWT SECRET cargado correctamente.");
     }
 
-    public String createToken(String username, String role) {
+    public String createToken(String username, String role, Long idPersona) {
         final var now = new Date();
         final var expirationDate = new Date(now.getTime() + (3600 * 1000));
 
         return Jwts.builder()
                 .setSubject(username)
                 .claim("role", role)
+                .claim("idPersona", idPersona)
                 .setIssuedAt(now)
                 .setExpiration(expirationDate)
                 .signWith(getSecretKey())
                 .compact();
     }
-
     public boolean validateToken(String token) {
         try {
             final var expiration = getExpirationDate(token);

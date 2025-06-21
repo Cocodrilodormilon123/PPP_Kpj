@@ -29,7 +29,7 @@ public class EmpresaController {
     @Operation(summary = "Registrar una nueva empresa")
     @PostMapping
     public ResponseEntity<Empresa> registrar(@RequestBody Empresa empresa) {
-        log.info("Registrando empresa: {}", empresa.getNombre());
+        log.info("Registrando empresa: {} por persona ID: {}", empresa.getNombre(), empresa.getIdPersona());
         Empresa nueva = empresaService.guardar(empresa);
         return ResponseEntity.created(URI.create("/empresas/" + nueva.getId())).body(nueva);
     }

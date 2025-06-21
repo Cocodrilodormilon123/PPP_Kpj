@@ -17,6 +17,10 @@ spring:
       ddl-auto: update
     show-sql: true
 
+application:
+  jwt:
+    secret: S3cur1tyM1cr0S3rv1c3S3cur1tyM1cr0S3rv1c3
+
 server:
   port: 3030
   servlet:
@@ -24,9 +28,10 @@ server:
 
 eureka:
   instance:
-    hostname: localhost  # 👈 fuerza a que use localhost
+    hostname: localhost
     prefer-ip-address: false
     instance-id: "${spring.application.name}:${random.value}"
+
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/

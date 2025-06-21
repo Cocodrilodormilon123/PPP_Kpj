@@ -63,6 +63,11 @@ public class GatewayBeans {
     public RouteLocator routeLocatorOauth2(RouteLocatorBuilder builder) {
         return builder
                 .routes()
+                .route("persona-img", route -> route
+                        .path("/persona-ms/img/**")
+                        .uri("lb://PERSONA-MS"))
+
+                // 2. Otras rutas con filtro
                 .route("persona-ms", route -> route
                         .path("/persona-ms/**")
                         .filters(filter -> filter.filter(this.authFilter))

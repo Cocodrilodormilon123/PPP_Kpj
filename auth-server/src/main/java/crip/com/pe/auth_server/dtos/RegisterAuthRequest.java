@@ -4,6 +4,7 @@ public class RegisterAuthRequest {
     private String username;
     private String password;
     private String role;
+    private Long idPersona;
 
     public String getUsername() {
         return username;
@@ -24,5 +25,12 @@ public class RegisterAuthRequest {
     }
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Long getIdPersona() {
+        return idPersona;
+    }
+    public void setIdPersona(Long idPersona) {
+        this.idPersona = idPersona;
     }
 }

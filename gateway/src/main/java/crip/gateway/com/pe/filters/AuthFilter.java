@@ -16,7 +16,7 @@ public class AuthFilter implements GatewayFilter {
 
     private final WebClient webClient;
 
-    private static final String AUTH_VALIDATE_URI = "lb://auth-server/auth-server/auth/jwt";
+    private static final String AUTH_VALIDATE_URI = "lb://auth-server/auth-server/auth/jwt"; // IMPORTANTE: URI del validador
     private static final String ACCESS_TOKEN_HEADER_NAME = "accessToken";
 
     @Autowired
@@ -28,35 +28,43 @@ public class AuthFilter implements GatewayFilter {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
 
+        // Rutas públicas (sin autenticación)
         if (path.contains("/auth-server/auth/login") || path.contains("/auth-server/auth/register")) {
             return chain.filter(exchange);
         }
 
+        // Verifica que exista el header Authorization
         if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-            return this.onError(exchange);
+            return this.onError(exchange, HttpStatus.UNAUTHORIZED);
         }
 
         final String tokenHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         final String[] chunks = tokenHeader.split(" ");
 
+        // Verifica el formato del token: "Bearer <token>"
         if (chunks.length != 2 || !chunks[0].equalsIgnoreCase("Bearer")) {
-            return this.onError(exchange);
+            return this.onError(exchange, HttpStatus.UNAUTHORIZED);
         }
 
         final String token = chunks[1];
 
+        // Llama al validador de token del auth-server
         return this.webClient
                 .post()
                 .uri(AUTH_VALIDATE_URI)
                 .header(ACCESS_TOKEN_HEADER_NAME, token)
                 .retrieve()
                 .bodyToMono(TokenDto.class)
-                .map(response -> exchange)
-                .flatMap(chain::filter);
+                .map(response -> {
+                    // Aquí podrías guardar en atributos del request datos como ID o rol si lo necesitas después
+                    return exchange;
+                })
+                .flatMap(chain::filter)
+                .onErrorResume(ex -> this.onError(exchange, HttpStatus.UNAUTHORIZED)); // Captura errores como 401
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange) {
-        exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+    private Mono<Void> onError(ServerWebExchange exchange, HttpStatus status) {
+        exchange.getResponse().setStatusCode(status);
         return exchange.getResponse().setComplete();
     }
 }
