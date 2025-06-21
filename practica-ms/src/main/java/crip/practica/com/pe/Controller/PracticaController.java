@@ -75,9 +75,23 @@ public class PracticaController {
         practicaService.deletePractica(id);
         return ResponseEntity.noContent().build();
     }
+
     @Operation(summary = "Listar prácticas por ID de persona")
     @GetMapping("/persona/{idPersona}")
     public ResponseEntity<List<Practica>> listarPorIdPersona(@PathVariable Long idPersona) {
         return ResponseEntity.ok(practicaService.getPracticasByPersonaId(idPersona));
+    }
+
+    @Operation(summary = "Generar práctica automáticamente si la postulación y el documento están aceptados")
+    @PostMapping("/generar/{idPostulacion}")
+    public ResponseEntity<?> generarDesdeEstados(@PathVariable Long idPostulacion) {
+        log.info("Intentando generar práctica para postulación ID {}", idPostulacion);
+        try {
+            Practica nueva = practicaService.verificarYCrearPractica(idPostulacion);
+            return ResponseEntity.created(URI.create("/practicas/" + nueva.getId())).body(nueva);
+        } catch (Exception e) {
+            log.error("Error al generar práctica: {}", e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

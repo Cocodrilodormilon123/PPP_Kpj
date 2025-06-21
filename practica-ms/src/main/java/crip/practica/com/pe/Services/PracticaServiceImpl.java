@@ -1,5 +1,6 @@
 package crip.practica.com.pe.Services;
 
+import crip.practica.com.pe.Clients.OfertaPostulacionClient;
 import crip.practica.com.pe.Entities.EstadoPractica;
 import crip.practica.com.pe.Entities.Practica;
 import crip.practica.com.pe.Repository.PracticaRepository;
@@ -17,9 +18,11 @@ import java.util.Optional;
 public class PracticaServiceImpl implements PracticaService {
 
     private final PracticaRepository practicaRepository;
+    private final OfertaPostulacionClient ofertaPostulacionClient;
 
-    public PracticaServiceImpl(PracticaRepository practicaRepository) {
+    public PracticaServiceImpl(PracticaRepository practicaRepository, OfertaPostulacionClient ofertaPostulacionClient) {
         this.practicaRepository = practicaRepository;
+        this.ofertaPostulacionClient = ofertaPostulacionClient;
     }
 
     @Override
@@ -97,6 +100,31 @@ public class PracticaServiceImpl implements PracticaService {
     @Override
     public Optional<Practica> getPracticaById(Long id) {
         return practicaRepository.findById(id);
+    }
+
+    @Override
+    public Practica verificarYCrearPractica(Long idPostulacion) {
+        String estadoPostulacion = ofertaPostulacionClient.obtenerEstadoPostulacion(idPostulacion);
+        String estadoDocumento = ofertaPostulacionClient.obtenerEstadoDocumento(idPostulacion);
+
+        if ("ACEPTADA".equals(estadoPostulacion) && "ACEPTADO".equals(estadoDocumento)) {
+            boolean yaExiste = practicaRepository.existsByIdPostulacion(idPostulacion);
+            if (yaExiste) {
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        "Ya existe una práctica para esta postulación.");
+            }
+
+            Practica practica = new Practica();
+            practica.setIdPostulacion(idPostulacion);
+            practica.setEstado(EstadoPractica.EN_PROCESO);
+            practica.setFechaInicio(LocalDate.now());
+
+            return practicaRepository.save(practica);
+        } else {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "No se cumplen los requisitos para generar la práctica. " +
+                            "(Postulación: " + estadoPostulacion + ", Documento: " + estadoDocumento + ")");
+        }
     }
 
     @Override

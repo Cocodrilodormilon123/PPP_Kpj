@@ -14,5 +14,6 @@ public interface PracticaService {
     List<Practica> getPracticasByPostulacionId(Long postulacionId);
     List<Practica> getPracticasByPersonaId(Long personaId);
     Optional<Practica> getPracticaById(Long id);
+    Practica verificarYCrearPractica(Long idPostulacion);
     void deletePractica(Long id);
 }
