@@ -58,4 +58,35 @@ public class GatewayBeans {
                         .uri("http://localhost:7070"))
                 .build();
     }
+    @Bean
+    @Profile("oauth2")
+    public RouteLocator routeLocatorOauth2(RouteLocatorBuilder builder) {
+        return builder
+                .routes()
+                .route("persona-ms", route -> route
+                        .path("/persona-ms/**")
+                        .filters(filter -> filter.filter(this.authFilter))
+                        .uri("lb://persona-ms"))
+
+                .route("oferta-ms", route -> route
+                        .path("/oferta-ms/**")
+                        .filters(filter -> filter.filter(this.authFilter))
+                        .uri("lb://oferta-ms"))
+
+                .route("practica-ms", route -> route
+                        .path("/practica-ms/**")
+                        .filters(filter -> filter.filter(this.authFilter))
+                        .uri("lb://practica-ms"))
+
+                .route("report-ms", route -> route
+                        .path("/report-ms/**")
+                        .filters(filter -> filter.filter(this.authFilter))
+                        .uri("lb://report-ms"))
+
+                .route("auth-server", route -> route
+                        .path("/auth-server/auth/**") // Sin filtro para que funcione el login
+                        .uri("lb://auth-server"))
+
+                .build();
+    }
 }

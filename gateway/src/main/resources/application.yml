@@ -3,7 +3,7 @@ spring:
     name: gateway
 
   profiles:
-    default: eureka-on  # "eureka-off" para pruebas locales sin Eureka
+    default: oauth2  # Cambia entre: eureka-off, eureka-on, oauth2
 
   cloud:
     gateway:
@@ -14,12 +14,8 @@ spring:
             allowedMethods: "*"
             allowedHeaders: "*"
 
-  web:
-    resources:
-      static-locations: file:./img/
-
 server:
-  port: 4040  # Puerto
+  port: 4040
 
 eureka:
   client:
@@ -27,7 +23,8 @@ eureka:
     register-with-eureka: true
     service-url:
       defaultZone: http://localhost:8761/eureka/
+
   instance:
-    prefer-ip-address: false
-    hostname: localhost
-    instance-id: gateway:${random.value}
+    hostname: localhost         # 👈 fuerza uso de localhost
+    prefer-ip-address: false    # 👈 importante: no usar IP ni nombre completo
+    instance-id: ${spring.application.name}:${random.value}

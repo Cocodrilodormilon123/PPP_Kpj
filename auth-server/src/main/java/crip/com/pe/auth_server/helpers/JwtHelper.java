@@ -29,12 +29,13 @@ public class JwtHelper {
         log.info("JWT SECRET cargado correctamente.");
     }
 
-    public String createToken(String username) {
+    public String createToken(String username, String role) {
         final var now = new Date();
         final var expirationDate = new Date(now.getTime() + (3600 * 1000));
 
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(now)
                 .setExpiration(expirationDate)
                 .signWith(getSecretKey())

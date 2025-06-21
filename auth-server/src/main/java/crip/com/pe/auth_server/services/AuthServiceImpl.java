@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
 
         validatePassword(user.getPassword(), userFromDb.getPassword());
 
-        var token = jwtHelper.createToken(userFromDb.getUsername());
+        var token = jwtHelper.createToken(userFromDb.getUsername(), userFromDb.getRole());
         return new TokenDto(token);
     }
 
@@ -51,6 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private void validatePassword(String rawPassword, String encodedPassword) {
+        System.out.println("Comparando: " + rawPassword + " vs " + encodedPassword);
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, USER_EXCEPTION_MSG);
         }
