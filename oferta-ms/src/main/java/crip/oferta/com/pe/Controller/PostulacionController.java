@@ -123,4 +123,12 @@ public class PostulacionController {
         return ResponseEntity.ok(resultado);
     }
 
+    @Operation(summary = "Obtener estado de una postulación por ID")
+    @GetMapping("/estado-actual/{idPostulacion}")
+    public ResponseEntity<String> obtenerEstadoPostulacion(@PathVariable Long idPostulacion) {
+        return postulacionService.getPostulacionById(idPostulacion)
+                .map(p -> ResponseEntity.ok(p.getEstado().name()))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }
