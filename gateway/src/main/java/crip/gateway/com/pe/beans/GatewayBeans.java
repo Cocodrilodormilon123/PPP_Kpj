@@ -66,17 +66,17 @@ public class GatewayBeans {
                 .route("persona-ms", route -> route
                         .path("/persona-ms/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://persona-ms"))
+                        .uri("lb://PERSONA-MS"))
 
                 .route("oferta-ms", route -> route
                         .path("/oferta-ms/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://oferta-ms"))
+                        .uri("lb://OFERTA-MS"))
 
                 .route("practica-ms", route -> route
                         .path("/practica-ms/**")
                         .filters(filter -> filter.filter(this.authFilter))
-                        .uri("lb://practica-ms"))
+                        .uri("lb://PRACTICA-MS"))
 
                 .route("report-ms", route -> route
                         .path("/report-ms/**")
@@ -85,7 +85,7 @@ public class GatewayBeans {
 
                 .route("auth-server", route -> route
                         .path("/auth-server/auth/**") // Sin filtro para que funcione el login
-                        .uri("lb://auth-server"))
+                        .uri("lb://AUTH-SERVER"))
 
                 .build();
     }

@@ -3,7 +3,7 @@ spring:
     name: gateway
 
   profiles:
-    default: oauth2  # Cambia entre: eureka-off, eureka-on, oauth2
+    active: oauth2  # Cambia entre: eureka-off, eureka-on, oauth2
 
   cloud:
     gateway:
