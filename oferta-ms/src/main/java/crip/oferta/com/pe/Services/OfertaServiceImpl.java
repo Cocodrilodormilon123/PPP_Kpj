@@ -4,6 +4,7 @@ import crip.oferta.com.pe.Entities.EstadoOferta;
 import crip.oferta.com.pe.Entities.Oferta;
 import crip.oferta.com.pe.Repository.OfertaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -52,16 +53,7 @@ public class OfertaServiceImpl implements OfertaService {
 
     @Override
     public List<Oferta> listarTodo() {
-        List<Oferta> ofertas = ofertaRepository.findAll();
-
-        for (Oferta oferta : ofertas) {
-            if (oferta.getFechaFin().isBefore(LocalDate.now()) && oferta.getEstado() == EstadoOferta.ACTIVA) {
-                oferta.setEstado(EstadoOferta.FINALIZADA);
-                ofertaRepository.save(oferta); // Guarda el nuevo estado en la base de datos
-            }
-        }
-
-        return ofertas;
+        return ofertaRepository.findAll();
     }
 
     @Override
@@ -90,4 +82,19 @@ public class OfertaServiceImpl implements OfertaService {
             return ofertaRepository.save(existente);
         }).orElseThrow(() -> new RuntimeException("Oferta no encontrada con ID: " + id));
     }
+
+    @Scheduled(cron = "0 0 0 * * *") // Todos los días a las 00:00
+    public void finalizarOfertasVencidasAutomaticamente() {
+        List<Oferta> ofertasActivas = ofertaRepository.findByEstado(EstadoOferta.ACTIVA);
+
+        for (Oferta oferta : ofertasActivas) {
+            if (oferta.getFechaFin() != null && oferta.getFechaFin().isBefore(LocalDate.now())) {
+                oferta.setEstado(EstadoOferta.FINALIZADA);
+                ofertaRepository.save(oferta);
+            }
+        }
+
+        System.out.println("🕛 Verificación automática completada: se finalizaron ofertas vencidas.");
+    }
+
 }
