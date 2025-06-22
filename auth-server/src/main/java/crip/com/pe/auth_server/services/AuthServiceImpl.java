@@ -77,17 +77,19 @@ public class AuthServiceImpl implements AuthService {
         userRepository.save(user);
     }
     @Override
-    public void changePassword(ChangePasswordRequest request) {
+    public TokenDto changePassword(ChangePasswordRequest request) {
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
 
-        // Validar contraseña antigua
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña actual incorrecta");
         }
 
-        // Actualizar con la nueva contraseña
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+
+        // ✅ Generar nuevo token con los datos actuales del usuario
+        var token = jwtHelper.createToken(user.getUsername(), user.getRole(), user.getIdPersona());
+        return new TokenDto(token);
     }
 }

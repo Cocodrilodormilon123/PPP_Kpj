@@ -48,9 +48,10 @@ public class AuthController {
         return ResponseEntity.ok("Usuario registrado correctamente");
     }
     @PostMapping("/change-password")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+    public ResponseEntity<TokenDto> changePassword(@RequestBody ChangePasswordRequest request) {
         log.info("Cambio de contraseña para usuario: {}", request.getUsername());
-        authService.changePassword(request);
-        return ResponseEntity.ok("Contraseña actualizada correctamente");
+        TokenDto newToken = authService.changePassword(request);
+        return ResponseEntity.ok(newToken);
     }
+
 }

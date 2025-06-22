@@ -10,6 +10,6 @@ public interface AuthService {
     TokenDto login(UserDto user);
     TokenDto validateToken(TokenDto token);
     void registerUser(RegisterAuthRequest request);
-    void changePassword(ChangePasswordRequest request);
+    TokenDto changePassword(ChangePasswordRequest request);
 
 }
