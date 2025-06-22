@@ -54,13 +54,6 @@ public class PostulacionServiceImpl implements PostulacionService {
                         case PENDIENTE -> {
                             postulacion.setComentario("En espera");
                         }
-                        case ACEPTADA -> {
-                            postulacion.setComentario(
-                                    (comentario == null || comentario.isBlank())
-                                            ? "¡Has sido aceptado! Ahora puedes subir tus documentos."
-                                            : comentario
-                            );
-                        }
                         case EN_REVISION -> {
                             postulacion.setComentario(
                                     (comentario == null || comentario.isBlank())
@@ -68,16 +61,7 @@ public class PostulacionServiceImpl implements PostulacionService {
                                             : comentario
                             );
 
-                            // Si antes no estaba en EN_REVISION y ahora sí, se genera práctica
-                            if (estadoAnterior != EstadoPostulacion.EN_REVISION) {
-                                Practica practica = new Practica();
-                                practica.setIdPostulacion(postulacion.getId());
-                                practica.setIdPersona(postulacion.getIdPersona());
-                                practica.setEstado(EstadoPractica.EN_PROCESO);
-                                practica.setFechaInicio(LocalDate.now());
 
-                                practicaClient.registrar(practica);
-                            }
                         }
                         case RECHAZADA -> {
                             postulacion.setComentario(

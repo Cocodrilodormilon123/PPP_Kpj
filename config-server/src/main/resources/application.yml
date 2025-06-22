@@ -11,7 +11,7 @@ spring:
           uri: https://github.com/Cocodrilodormilon123/practica-config.git
           default-label: main
           clone-on-start: true
-          username: Cocodrilodormilon123
+          username: FENIXTTOBAN
           password: ${GIT_TOKEN}
 
 server:

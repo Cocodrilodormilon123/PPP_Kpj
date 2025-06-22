@@ -21,6 +21,7 @@ public class UserEntity {
 
     @Column(name = "id_persona")
     private Long idPersona;
+
     public UserEntity() {
     }
 

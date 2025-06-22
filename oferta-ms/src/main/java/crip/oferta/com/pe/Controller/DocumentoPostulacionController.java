@@ -125,4 +125,24 @@ public class DocumentoPostulacionController {
                 .map(doc -> ResponseEntity.ok(doc.getEstado().name()))
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @Operation(summary = "Obtener los archivos subidos por estudiante")
+    @GetMapping("/archivo/{folder}/{nombre}")
+    public ResponseEntity<Resource> verArchivo(
+            @PathVariable String folder,
+            @PathVariable String nombre
+    ) throws IOException {
+        Path path = Paths.get(folder, nombre); // Esto da: archivos-subidos/doc_1234.pdf
+        Resource resource = new UrlResource(path.toUri());
+
+        if (!resource.exists()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String contentType = Files.probeContentType(path);
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(contentType))
+                .body(resource);
+    }
+
 }

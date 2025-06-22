@@ -82,9 +82,9 @@ public class PostulacionController {
     }
 
     @Operation(summary = "Listar postulaciones por ID de persona")
-    @GetMapping("/persona/{personaId}")
-    public ResponseEntity<List<Postulacion>> listarPorPersonaId(@PathVariable Long personaId) {
-        return ResponseEntity.ok(postulacionService.getPostulacionesByIdPersona(personaId));
+    @GetMapping("/persona/{idPersona}")
+    public ResponseEntity<List<Postulacion>> listarPorPersonaId(@PathVariable Long idPersona) {
+        return ResponseEntity.ok(postulacionService.getPostulacionesByIdPersona(idPersona));
     }
 
     @Operation(summary = "Eliminar postulación por ID")
