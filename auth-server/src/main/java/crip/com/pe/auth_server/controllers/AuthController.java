@@ -1,5 +1,6 @@
 package crip.com.pe.auth_server.controllers;
 
+import crip.com.pe.auth_server.dtos.ChangePasswordRequest;
 import crip.com.pe.auth_server.dtos.RegisterAuthRequest;
 import crip.com.pe.auth_server.dtos.TokenDto;
 import crip.com.pe.auth_server.dtos.UserDto;
@@ -45,5 +46,11 @@ public class AuthController {
         log.info("Registrando usuario: {}", request.getUsername());
         authService.registerUser(request);
         return ResponseEntity.ok("Usuario registrado correctamente");
+    }
+    @PostMapping("/change-password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request) {
+        log.info("Cambio de contraseña para usuario: {}", request.getUsername());
+        authService.changePassword(request);
+        return ResponseEntity.ok("Contraseña actualizada correctamente");
     }
 }

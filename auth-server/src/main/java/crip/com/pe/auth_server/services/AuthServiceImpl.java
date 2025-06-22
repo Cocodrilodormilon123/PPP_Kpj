@@ -1,5 +1,6 @@
 package crip.com.pe.auth_server.services;
 
+import crip.com.pe.auth_server.dtos.ChangePasswordRequest;
 import crip.com.pe.auth_server.dtos.RegisterAuthRequest;
 import crip.com.pe.auth_server.dtos.TokenDto;
 import crip.com.pe.auth_server.dtos.UserDto;
@@ -73,6 +74,20 @@ public class AuthServiceImpl implements AuthService {
         user.setRole(request.getRole());
         user.setIdPersona(request.getIdPersona()); // ✅ Guardar el ID de la persona vinculada
 
+        userRepository.save(user);
+    }
+    @Override
+    public void changePassword(ChangePasswordRequest request) {
+        var user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+
+        // Validar contraseña antigua
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Contraseña actual incorrecta");
+        }
+
+        // Actualizar con la nueva contraseña
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
 }
