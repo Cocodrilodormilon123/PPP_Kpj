@@ -145,4 +145,18 @@ public class DocumentoPostulacionController {
                 .body(resource);
     }
 
+    @Operation(summary = "Aceptar documento y generar práctica si corresponde")
+    @PutMapping("/aceptar/{idPostulacion}")
+    public ResponseEntity<DocumentoPostulacion> aceptarDocumento(@PathVariable Long idPostulacion) {
+        DocumentoPostulacion actualizado = service.actualizarEstado(idPostulacion, "ACEPTADO");
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @Operation(summary = "Rechazar documento de postulación")
+    @PutMapping("/rechazar/{idPostulacion}")
+    public ResponseEntity<DocumentoPostulacion> rechazarDocumento(@PathVariable Long idPostulacion) {
+        DocumentoPostulacion actualizado = service.actualizarEstado(idPostulacion, "RECHAZADO");
+        return ResponseEntity.ok(actualizado);
+    }
+
 }
