@@ -34,8 +34,24 @@ public class DocumentoPostulacionServiceImpl implements DocumentoPostulacionServ
     }
 
     @Override
-    public DocumentoPostulacion guardar(DocumentoPostulacion doc) {
-        return documentoPostulacionRepository.save(doc);
+    public DocumentoPostulacion guardar(DocumentoPostulacion nuevoDoc) {
+        if (nuevoDoc == null || nuevoDoc.getIdPostulacion() == null) {
+            throw new IllegalArgumentException("El documento o el ID de la postulación no pueden ser nulos.");
+        }
+
+        Long idPostulacion = nuevoDoc.getIdPostulacion();
+        Optional<DocumentoPostulacion> existenteOpt = documentoPostulacionRepository.findByIdPostulacion(idPostulacion);
+
+        if (existenteOpt.isPresent()) {
+            DocumentoPostulacion existente = existenteOpt.get();
+            existente.setRutaArchivo(nuevoDoc.getRutaArchivo());
+            existente.setEstado(EstadoDocumento.PENDIENTE);
+            existente.setFechaSubida(nuevoDoc.getFechaSubida());
+            return documentoPostulacionRepository.save(existente);
+        } else {
+            nuevoDoc.setEstado(EstadoDocumento.PENDIENTE);
+            return documentoPostulacionRepository.save(nuevoDoc);
+        }
     }
 
     @Override
