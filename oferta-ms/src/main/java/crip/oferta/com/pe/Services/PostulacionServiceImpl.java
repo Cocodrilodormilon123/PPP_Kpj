@@ -114,4 +114,8 @@ public class PostulacionServiceImpl implements PostulacionService {
                                     "Postulación no encontrada con ID: " + id);
                         });
     }
+    @Override
+    public List<Postulacion> listarPorIdPersona(Long idPersona) {
+        return postulacionRepository.findByIdPersona(idPersona);
+    }
 }

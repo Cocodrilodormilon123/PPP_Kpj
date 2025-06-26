@@ -14,7 +14,9 @@ import java.net.URI;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/personas")
@@ -29,12 +31,11 @@ public class PersonaController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Persona> registrarConImagen(
+    public ResponseEntity<Map<String, Object>> registrarConImagen(
             @RequestPart("persona") String personaJson,
             @RequestPart("file") MultipartFile archivo
     ) {
         try {
-            //Convertir el JSON manualmente
             ObjectMapper mapper = new ObjectMapper();
             mapper.findAndRegisterModules();
             Persona persona = mapper.readValue(personaJson, Persona.class);
@@ -45,15 +46,27 @@ public class PersonaController {
             Files.copy(archivo.getInputStream(), rutaDestino, StandardCopyOption.REPLACE_EXISTING);
 
             persona.setFoto(nombreArchivo);
-
             Persona nueva = personaService.guardar(persona);
-            return ResponseEntity.created(URI.create("/personas/" + nueva.getId())).body(nueva);
+
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("id", nueva.getId());
+
+            return ResponseEntity.ok(respuesta);
+
+        } catch (RuntimeException e) {
+            // Error lanzado desde el servicio, como "El DNI ya está registrado"
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error inesperado al registrar persona");
+            return ResponseEntity.internalServerError().body(error);
         }
     }
+
 
 
     @Operation(summary = "Actualizar persona por ID")

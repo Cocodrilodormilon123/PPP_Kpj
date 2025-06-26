@@ -72,7 +72,7 @@ public class AuthServiceImpl implements AuthService {
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(request.getRole());
-        user.setIdPersona(request.getIdPersona()); // ✅ Guardar el ID de la persona vinculada
+        user.setIdPersona(request.getIdPersona());
 
         userRepository.save(user);
     }

@@ -25,6 +25,16 @@ public class PersonaServiceImpl implements PersonaService {
 
     @Override
     public Persona guardar(Persona persona) {
+        // Verificar si el DNI ya existe
+        if (personaRepository.existsByDni(persona.getDni())) {
+            throw new RuntimeException("El DNI ya está registrado.");
+        }
+
+        // Verificar si el código ya existe (solo si hay código)
+        if (persona.getCodigo() != null && personaRepository.existsByCodigo(persona.getCodigo())) {
+            throw new RuntimeException("El código ya está registrado.");
+        }
+
         Persona guardada = personaRepository.save(persona);
 
         if (guardada.getCodigo() != null && guardada.getDni() != null && guardada.getTipoPersona() != null) {
@@ -32,6 +42,7 @@ public class PersonaServiceImpl implements PersonaService {
             authRequest.setUsername(guardada.getCodigo());
             authRequest.setPassword(guardada.getDni());
             authRequest.setRole(guardada.getTipoPersona().toString());
+            authRequest.setIdPersona(guardada.getId());
 
             try {
                 restTemplate.postForObject(
@@ -46,6 +57,7 @@ public class PersonaServiceImpl implements PersonaService {
 
         return guardada;
     }
+
 
     @Override
     public Persona actualizar(Long id, Persona persona) {

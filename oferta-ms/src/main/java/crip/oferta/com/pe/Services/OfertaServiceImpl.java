@@ -83,18 +83,21 @@ public class OfertaServiceImpl implements OfertaService {
         }).orElseThrow(() -> new RuntimeException("Oferta no encontrada con ID: " + id));
     }
 
-    @Scheduled(cron = "0 0 0 * * *") // Todos los días a las 00:00
+    @Scheduled(fixedDelay = 15000)
     public void finalizarOfertasVencidasAutomaticamente() {
+        System.out.println("🟡 Verificación automática de ofertas...");
         List<Oferta> ofertasActivas = ofertaRepository.findByEstado(EstadoOferta.ACTIVA);
 
         for (Oferta oferta : ofertasActivas) {
             if (oferta.getFechaFin() != null && oferta.getFechaFin().isBefore(LocalDate.now())) {
                 oferta.setEstado(EstadoOferta.FINALIZADA);
                 ofertaRepository.save(oferta);
+                System.out.println("✅ Oferta finalizada: " + oferta.getTitulo());
             }
         }
 
-        System.out.println("🕛 Verificación automática completada: se finalizaron ofertas vencidas.");
+        System.out.println("✅ Verificación completada.");
     }
+
 
 }

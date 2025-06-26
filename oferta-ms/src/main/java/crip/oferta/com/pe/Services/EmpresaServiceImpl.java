@@ -24,12 +24,23 @@ public class EmpresaServiceImpl implements EmpresaService {
     @Override
     public Empresa guardar(Empresa empresa) {
         String ruc = empresa.getRuc();
+
+        // Validar longitud y formato del RUC
         if (!ruc.matches("^(10|20)\\d{9}$")) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "El RUC debe empezar con 10 o 20 y tener 11 dígitos numéricos."
             );
         }
+
+        // Verificar si el RUC ya está registrado
+        if (empresaRepository.existsByRuc(ruc)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Este RUC ya está registrado."
+            );
+        }
+
         return empresaRepository.save(empresa);
     }
 

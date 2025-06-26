@@ -8,4 +8,5 @@ import java.util.List;
 
 public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
     List<Empresa> findByEstado(EstadoEmpresa estado);
+    boolean existsByRuc(String ruc);
 }

@@ -15,4 +15,5 @@ public interface PostulacionService {
     List<Postulacion> getPostulacionesByOfertaId(Long ofertaId);
     Optional<Postulacion> getPostulacionById(Long id);
     void deletePostulacion(Long id);
+    List<Postulacion> listarPorIdPersona(Long idPersona);
 }

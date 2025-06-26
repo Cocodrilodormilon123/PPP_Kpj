@@ -43,9 +43,14 @@ public class AuthController {
     }
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterAuthRequest request) {
-        log.info("Registrando usuario: {}", request.getUsername());
-        authService.registerUser(request);
-        return ResponseEntity.ok("Usuario registrado correctamente");
+        try {
+            log.info("Registrando usuario: {}", request.getUsername());
+            authService.registerUser(request);
+            return ResponseEntity.ok("Usuario registrado correctamente");
+        } catch (Exception e) {
+            log.error("Error al registrar usuario: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Error al registrar usuario: " + e.getMessage());
+        }
     }
     @PostMapping("/change-password")
     public ResponseEntity<TokenDto> changePassword(@RequestBody ChangePasswordRequest request) {

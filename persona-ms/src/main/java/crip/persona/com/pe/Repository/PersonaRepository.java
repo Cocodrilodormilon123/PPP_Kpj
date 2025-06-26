@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface PersonaRepository extends JpaRepository<Persona, Long> {
     List<Persona> findByTipoPersona(TipoPersona tipoPersona);
     Optional<Persona> findByCodigo(String codigo);
+    boolean existsByDni(String dni);
+    boolean existsByCodigo(String codigo);
 }

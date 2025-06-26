@@ -69,7 +69,7 @@ public class DocumentoPostulacionServiceImpl implements DocumentoPostulacionServ
 
         log.info("📄 Estado del documento cambiado a {} para ID Postulacion {}", nuevoEstado, idPostulacion);
 
-        // ➕ Nueva lógica para crear práctica automáticamente si el documento fue ACEPTADO
+        //Nueva lógica para crear práctica automáticamente si el documento fue ACEPTADO
         if (EstadoDocumento.ACEPTADO.name().equals(nuevoEstado)) {
             Optional<Postulacion> postulacionOpt = postulacionRepository.findById(idPostulacion);
 
@@ -79,24 +79,24 @@ public class DocumentoPostulacionServiceImpl implements DocumentoPostulacionServ
                 if (postulacion.getEstado() == EstadoPostulacion.EN_REVISION) {
                     Practica practica = new Practica();
                     practica.setIdPersona(postulacion.getIdPersona());
-                    practica.setIdPostulacion(postulacion.getId()); // 🔥 ESTA ES LA LÍNEA CLAVE
+                    practica.setIdPostulacion(postulacion.getId()); //LÍNEA CLAVE
                     practica.setEstado(EstadoPractica.EN_PROCESO);
 
                     try {
                         practicaClient.registrar(practica);
-                        log.info("✅ Práctica generada automáticamente para persona {}.",
+                        log.info("Práctica generada automáticamente para persona {}.",
                                 practica.getIdPersona());
                     } catch (Exception e) {
-                        log.error("❌ Error al crear práctica automáticamente: {}", e.getMessage(), e);
+                        log.error("Error al crear práctica automáticamente: {}", e.getMessage(), e);
                     }
 
                 } else {
-                    log.warn("⚠️ La postulación con ID {} no está en EN_REVISION. No se genera práctica.",
+                    log.warn("La postulación con ID {} no está en EN_REVISION. No se genera práctica.",
                             postulacion.getId());
                 }
 
             } else {
-                log.warn("⚠️ No se encontró la postulación con ID {}", idPostulacion);
+                log.warn("No se encontró la postulación con ID {}", idPostulacion);
             }
         }
 

@@ -14,11 +14,11 @@ public class Oferta {
     private Long id;
 
     private String titulo;
+    @Column(length = 1000)
     private String descripcion;
 
     @Column(nullable = false)
     private String ubicacion;
-
     @Column(length = 1000)
     private String requerimientos;
 

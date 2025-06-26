@@ -130,5 +130,13 @@ public class PostulacionController {
                 .map(p -> ResponseEntity.ok(p.getEstado().name()))
                 .orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/estudiante/{idPersona}")
+    public ResponseEntity<List<Postulacion>> listarPorEstudiante(@PathVariable Long idPersona) {
+        List<Postulacion> lista = postulacionService.listarPorIdPersona(idPersona);
+        if (lista.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(lista);
+    }
 
 }
