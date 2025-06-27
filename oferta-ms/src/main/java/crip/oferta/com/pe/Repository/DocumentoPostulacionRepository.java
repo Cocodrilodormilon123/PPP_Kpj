@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface DocumentoPostulacionRepository extends JpaRepository<DocumentoPostulacion, Long> {
     Optional<DocumentoPostulacion> findByIdPostulacion(Long idPostulacion);
+
 }

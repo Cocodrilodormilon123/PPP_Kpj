@@ -24,7 +24,11 @@ public class VacantesServiceImpl implements VacantesService {
         if (vacantes.getOcupados() > vacantes.getTotal()) {
             throw new IllegalArgumentException("Los cupos ocupados no pueden superar el total.");
         }
+
         vacantes.setDisponibles(vacantes.getTotal() - vacantes.getOcupados());
+
+        System.out.println("🔁 Guardando vacantes ID=" + vacantes.getId() + " | Ocupados=" + vacantes.getOcupados() + " | Total=" + vacantes.getTotal());
+
         return vacantesRepository.save(vacantes);
     }
 

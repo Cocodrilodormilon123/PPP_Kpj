@@ -8,4 +8,6 @@ public interface DocumentoPostulacionService {
     DocumentoPostulacion guardar(DocumentoPostulacion doc);
     Optional<DocumentoPostulacion> obtenerPorIdPostulacion(Long idPostulacion);
     DocumentoPostulacion actualizarEstado(Long idPostulacion, String nuevoEstado);
+    DocumentoPostulacion actualizarEstadoConComentario(Long idPostulacion, String nuevoEstado, String comentario);
+
 }

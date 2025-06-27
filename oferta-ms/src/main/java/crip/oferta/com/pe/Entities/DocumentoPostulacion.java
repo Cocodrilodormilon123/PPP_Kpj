@@ -24,6 +24,9 @@ public class DocumentoPostulacion {
     @Column(name = "fecha_subida")
     private LocalDate fechaSubida;
 
+    @Column(name = "comentario")
+    private String comentario;
+
     @PrePersist
     public void prePersist() {
         this.estado = EstadoDocumento.PENDIENTE;
@@ -70,6 +73,14 @@ public class DocumentoPostulacion {
         this.fechaSubida = fechaSubida;
     }
 
+    public String getComentario() {
+        return comentario;
+    }
+
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
     @Override
     public String toString() {
         return "DocumentoPostulacion{" +
@@ -78,6 +89,7 @@ public class DocumentoPostulacion {
                 ", rutaArchivo='" + rutaArchivo + '\'' +
                 ", estado=" + estado +
                 ", fechaSubida=" + fechaSubida +
+                ", comentario='" + comentario + '\'' +
                 '}';
     }
 }

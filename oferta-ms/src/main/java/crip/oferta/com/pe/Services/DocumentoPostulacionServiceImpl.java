@@ -69,37 +69,66 @@ public class DocumentoPostulacionServiceImpl implements DocumentoPostulacionServ
 
         log.info("📄 Estado del documento cambiado a {} para ID Postulacion {}", nuevoEstado, idPostulacion);
 
-        //Nueva lógica para crear práctica automáticamente si el documento fue ACEPTADO
-        if (EstadoDocumento.ACEPTADO.name().equals(nuevoEstado)) {
-            Optional<Postulacion> postulacionOpt = postulacionRepository.findById(idPostulacion);
+        Optional<Postulacion> postulacionOpt = postulacionRepository.findById(idPostulacion);
 
-            if (postulacionOpt.isPresent()) {
-                Postulacion postulacion = postulacionOpt.get();
+        if (postulacionOpt.isPresent()) {
+            Postulacion postulacion = postulacionOpt.get();
 
-                if (postulacion.getEstado() == EstadoPostulacion.EN_REVISION) {
-                    Practica practica = new Practica();
-                    practica.setIdPersona(postulacion.getIdPersona());
-                    practica.setIdPostulacion(postulacion.getId()); //LÍNEA CLAVE
-                    practica.setEstado(EstadoPractica.EN_PROCESO);
+            if (EstadoDocumento.ACEPTADO.name().equals(nuevoEstado)) {
+                // ✅ Generar práctica
+                Practica practica = new Practica();
+                practica.setIdPersona(postulacion.getIdPersona());
+                practica.setIdPostulacion(postulacion.getId());
+                practica.setEstado(EstadoPractica.EN_PROCESO);
 
-                    try {
-                        practicaClient.registrar(practica);
-                        log.info("Práctica generada automáticamente para persona {}.",
-                                practica.getIdPersona());
-                    } catch (Exception e) {
-                        log.error("Error al crear práctica automáticamente: {}", e.getMessage(), e);
-                    }
+                try {
+                    practicaClient.registrar(practica);
+                    log.info("✅ Práctica generada automáticamente para persona {}", postulacion.getIdPersona());
 
-                } else {
-                    log.warn("La postulación con ID {} no está en EN_REVISION. No se genera práctica.",
-                            postulacion.getId());
+                    postulacion.setEstado(EstadoPostulacion.ACEPTADA);
+                    postulacion.setComentario("Documento aprobado.");
+                    postulacionRepository.save(postulacion);
+
+                } catch (Exception e) {
+                    log.error("❌ Error al crear práctica automáticamente: {}", e.getMessage(), e);
                 }
 
-            } else {
-                log.warn("No se encontró la postulación con ID {}", idPostulacion);
+            } else if (EstadoDocumento.RECHAZADO.name().equals(nuevoEstado)) {
+                postulacion.setEstado(EstadoPostulacion.EN_REVISION);
+                postulacion.setComentario("Documento rechazado. Revisar formato o contenido.");
+                postulacionRepository.save(postulacion);
             }
+
+        } else {
+            log.warn("No se encontró la postulación con ID {}", idPostulacion);
         }
 
         return actualizado;
+    }
+    @Override
+    public DocumentoPostulacion actualizarEstadoConComentario(Long idPostulacion, String nuevoEstado, String comentario) {
+        DocumentoPostulacion doc = documentoPostulacionRepository.findByIdPostulacion(idPostulacion)
+                .orElseThrow(() -> new RuntimeException("No existe documento para esta postulación"));
+
+        doc.setEstado(EstadoDocumento.valueOf(nuevoEstado));
+        documentoPostulacionRepository.save(doc);
+
+        Optional<Postulacion> postulacionOpt = postulacionRepository.findById(idPostulacion);
+
+        if (postulacionOpt.isPresent()) {
+            Postulacion postulacion = postulacionOpt.get();
+
+            if (EstadoDocumento.RECHAZADO.name().equals(nuevoEstado)) {
+                postulacion.setEstado(EstadoPostulacion.EN_REVISION);
+                postulacion.setComentario(comentario);
+                postulacionRepository.save(postulacion);
+                log.info("📤 Documento RECHAZADO. Comentario guardado.");
+            }
+
+        } else {
+            log.warn("⚠️ No se encontró la postulación con ID {}", idPostulacion);
+        }
+
+        return doc;
     }
 }

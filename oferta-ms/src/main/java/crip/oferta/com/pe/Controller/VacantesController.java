@@ -86,6 +86,48 @@ public class VacantesController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @PutMapping("/oferta/{ofertaId}/incrementar")
+    public ResponseEntity<Vacantes> incrementarCuposOcupados(@PathVariable Long ofertaId) {
+        Optional<Vacantes> optional = vacantesService.findByOfertaId(ofertaId);
+
+        if (optional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Vacantes v = optional.get();
+
+        if (v.getOcupados() >= v.getTotal()) {
+            return ResponseEntity.badRequest().body(v);
+        }
+
+        v.setOcupados(v.getOcupados() + 1);
+        v.setDisponibles(v.getTotal() - v.getOcupados());
+
+        Vacantes actualizado = vacantesService.guardar(v);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @PutMapping("/oferta/{ofertaId}/reducir")
+    public ResponseEntity<Vacantes> reducirCuposOcupados(@PathVariable Long ofertaId) {
+        Optional<Vacantes> optional = vacantesService.findByOfertaId(ofertaId);
+
+        if (optional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Vacantes v = optional.get();
+
+        if (v.getOcupados() == 0) {
+            return ResponseEntity.badRequest().body(v);
+        }
+
+        v.setOcupados(v.getOcupados() - 1);
+        v.setDisponibles(v.getTotal() - v.getOcupados());
+
+        Vacantes actualizado = vacantesService.guardar(v);
+        return ResponseEntity.ok(actualizado);
+    }
+
 
     @Operation(summary = "Listar todas las vacantes")
     @GetMapping
