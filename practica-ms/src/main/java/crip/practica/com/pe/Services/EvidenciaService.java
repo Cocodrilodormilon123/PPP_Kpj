@@ -13,4 +13,5 @@ public interface EvidenciaService {
     List<Evidencia> getEvidenciasByPracticaId(Long practicaId);
     Optional<Evidencia> getEvidenciaById(Long id);
     void deleteEvidencia(Long id);
+    List<Evidencia> getEvidenciasByPersonaId(Long idPersona);
 }

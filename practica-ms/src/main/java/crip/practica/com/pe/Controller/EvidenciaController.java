@@ -5,10 +5,12 @@ import crip.practica.com.pe.Entities.Evidencia;
 import crip.practica.com.pe.Entities.Practica;
 import crip.practica.com.pe.Repository.PracticaRepository;
 import crip.practica.com.pe.Services.EvidenciaService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -101,12 +103,19 @@ public class EvidenciaController {
     public ResponseEntity<Resource> descargar(@PathVariable String nombreArchivo) throws IOException {
         Path path = Paths.get("uploads/" + nombreArchivo);
         Resource resource = new UrlResource(path.toUri());
+
         if (resource.exists()) {
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF) // MIME tipo correcto
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @Operation(summary = "Listar evidencias por ID de persona (administrador)")
+    @GetMapping("/persona/{idPersona}")
+    public ResponseEntity<List<Evidencia>> listarPorPersona(@PathVariable Long idPersona) {
+        return ResponseEntity.ok(evidenciaService.getEvidenciasByPersonaId(idPersona));
     }
 }

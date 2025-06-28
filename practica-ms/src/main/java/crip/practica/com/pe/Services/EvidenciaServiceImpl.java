@@ -2,7 +2,9 @@ package crip.practica.com.pe.Services;
 
 import crip.practica.com.pe.Entities.EstadoEvidencia;
 import crip.practica.com.pe.Entities.Evidencia;
+import crip.practica.com.pe.Entities.Practica;
 import crip.practica.com.pe.Repository.EvidenciaRepository;
+import crip.practica.com.pe.Repository.PracticaRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,11 @@ import java.util.Optional;
 public class EvidenciaServiceImpl implements EvidenciaService {
 
     private final EvidenciaRepository evidenciaRepository;
+    private final PracticaRepository practicaRepository;
 
-    public EvidenciaServiceImpl(EvidenciaRepository evidenciaRepository) {
+    public EvidenciaServiceImpl(EvidenciaRepository evidenciaRepository, PracticaRepository practicaRepository) {
         this.evidenciaRepository = evidenciaRepository;
+        this.practicaRepository = practicaRepository;
     }
 
     @Override
@@ -62,5 +66,12 @@ public class EvidenciaServiceImpl implements EvidenciaService {
                 .ifPresentOrElse(evidenciaRepository::delete, () -> {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Evidencia no encontrada");
                 });
+    }
+    public List<Evidencia> getEvidenciasByPersonaId(Long idPersona) {
+        List<Practica> practicas = practicaRepository.findByIdPersona(idPersona);
+        List<Long> idsPracticas = practicas.stream()
+                .map(Practica::getId)
+                .toList();
+        return evidenciaRepository.findAllByPracticaIdIn(idsPracticas);
     }
 }

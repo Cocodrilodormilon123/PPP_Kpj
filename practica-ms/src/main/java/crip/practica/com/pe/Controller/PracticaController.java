@@ -118,4 +118,5 @@ public class PracticaController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 }

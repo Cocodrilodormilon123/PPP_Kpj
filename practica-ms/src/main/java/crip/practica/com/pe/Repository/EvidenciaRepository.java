@@ -9,4 +9,5 @@ import java.util.List;
 public interface EvidenciaRepository extends JpaRepository<Evidencia, Long> {
     List<Evidencia> findByEstado(EstadoEvidencia estado);
     List<Evidencia> findByPracticaId(Long practicaId);
+    List<Evidencia> findAllByPracticaIdIn(List<Long> practicaIds);
 }
