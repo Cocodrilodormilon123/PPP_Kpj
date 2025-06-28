@@ -53,14 +53,36 @@ public class OfertaServiceImpl implements OfertaService {
 
     @Override
     public List<Oferta> listarTodo() {
-        return ofertaRepository.findAll();
+        List<Oferta> ofertas = ofertaRepository.findAll();
+
+        for (Oferta oferta : ofertas) {
+            if (oferta.getEstado() == EstadoOferta.ACTIVA &&
+                    oferta.getFechaFin() != null &&
+                    oferta.getFechaFin().isBefore(LocalDate.now())) {
+
+                oferta.setEstado(EstadoOferta.FINALIZADA);
+                ofertaRepository.save(oferta);
+            }
+        }
+
+        return ofertas;
     }
 
     @Override
     public List<Oferta> listarPorEstado(EstadoOferta estado) {
+        List<Oferta> ofertas = ofertaRepository.findByEstado(estado);
+
+        for (Oferta oferta : ofertas) {
+            if (oferta.getEstado() == EstadoOferta.ACTIVA &&
+                    oferta.getFechaFin() != null &&
+                    oferta.getFechaFin().isBefore(LocalDate.now())) {
+                oferta.setEstado(EstadoOferta.FINALIZADA);
+                ofertaRepository.save(oferta);
+            }
+        }
+
         return ofertaRepository.findByEstado(estado);
     }
-
     @Override
     public Optional<Oferta> findById(Long id) {
         return ofertaRepository.findById(id);
@@ -83,21 +105,6 @@ public class OfertaServiceImpl implements OfertaService {
         }).orElseThrow(() -> new RuntimeException("Oferta no encontrada con ID: " + id));
     }
 
-    @Scheduled(fixedDelay = 15000)
-    public void finalizarOfertasVencidasAutomaticamente() {
-        System.out.println("🟡 Verificación automática de ofertas...");
-        List<Oferta> ofertasActivas = ofertaRepository.findByEstado(EstadoOferta.ACTIVA);
-
-        for (Oferta oferta : ofertasActivas) {
-            if (oferta.getFechaFin() != null && oferta.getFechaFin().isBefore(LocalDate.now())) {
-                oferta.setEstado(EstadoOferta.FINALIZADA);
-                ofertaRepository.save(oferta);
-                System.out.println("✅ Oferta finalizada: " + oferta.getTitulo());
-            }
-        }
-
-        System.out.println("✅ Verificación completada.");
-    }
 
 
 }

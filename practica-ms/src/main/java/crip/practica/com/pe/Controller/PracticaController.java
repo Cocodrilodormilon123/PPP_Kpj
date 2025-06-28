@@ -103,4 +103,19 @@ public class PracticaController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @Operation(summary = "Verificar si un estudiante ya tiene una práctica EN_PROCESO")
+    @GetMapping("/persona/{idPersona}/tiene-activa")
+    public ResponseEntity<Boolean> verificarPracticaActiva(@PathVariable Long idPersona) {
+        boolean tieneActiva = practicaService.existePracticaActiva(idPersona);
+        return ResponseEntity.ok(tieneActiva);
+    }
+    @Operation(summary = "Obtener detalle completo de la práctica por estudiante")
+    @GetMapping("/detalle/estudiante/{idPersona}")
+    public ResponseEntity<?> obtenerDetallePorEstudiante(@PathVariable Long idPersona) {
+        try {
+            return ResponseEntity.ok(practicaService.obtenerDetallePorEstudiante(idPersona));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
