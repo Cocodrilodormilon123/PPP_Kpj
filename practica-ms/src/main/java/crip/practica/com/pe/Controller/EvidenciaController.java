@@ -5,10 +5,18 @@ import crip.practica.com.pe.Entities.Evidencia;
 import crip.practica.com.pe.Entities.Practica;
 import crip.practica.com.pe.Repository.PracticaRepository;
 import crip.practica.com.pe.Services.EvidenciaService;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -25,11 +33,41 @@ public class EvidenciaController {
     }
 
     @PostMapping("/registrar/{idPractica}")
-    public ResponseEntity<Evidencia> registrar(@PathVariable Long idPractica, @RequestBody Evidencia evidencia) {
+    public ResponseEntity<Evidencia> registrar(
+            @PathVariable Long idPractica,
+            @RequestParam("semana") int semana,
+            @RequestPart("archivo") MultipartFile archivo) {
+
         Practica practica = practicaRepository.findById(idPractica)
                 .orElseThrow(() -> new RuntimeException("Práctica no encontrada"));
-        evidencia.setPractica(practica);
-        return new ResponseEntity<>(evidenciaService.saveEvidencia(evidencia), HttpStatus.CREATED);
+
+        try {
+            // Crear carpeta si no existe
+            String carpetaUploads = "uploads/";
+            java.io.File folder = new java.io.File(carpetaUploads);
+            if (!folder.exists()) folder.mkdirs();
+
+            // Generar nombre único
+            String nombre = System.currentTimeMillis() + "_" + archivo.getOriginalFilename();
+            String ruta = carpetaUploads + nombre;
+
+            // Guardar archivo físicamente
+            java.nio.file.Files.copy(archivo.getInputStream(), java.nio.file.Paths.get(ruta));
+
+            // Crear entidad evidencia
+            Evidencia evidencia = new Evidencia();
+            evidencia.setPractica(practica);
+            evidencia.setSemana(semana);
+            evidencia.setNombreArchivo(nombre);
+            evidencia.setUrlArchivo(ruta);
+            evidencia.setFechaSubida(LocalDate.now());
+            evidencia.setEstado(EstadoEvidencia.PENDIENTE);
+
+            return new ResponseEntity<>(evidenciaService.saveEvidencia(evidencia), HttpStatus.CREATED);
+
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping
@@ -58,5 +96,18 @@ public class EvidenciaController {
     public ResponseEntity<Void> eliminar(@PathVariable Long id) {
         evidenciaService.deleteEvidencia(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/descargar/{nombreArchivo}")
+    public ResponseEntity<Resource> descargar(@PathVariable String nombreArchivo) throws IOException {
+        Path path = Paths.get("uploads/" + nombreArchivo);
+        Resource resource = new UrlResource(path.toUri());
+        if (resource.exists()) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

@@ -16,6 +16,7 @@ public class Evidencia {
     private String nombreArchivo;
     private String urlArchivo;
     private String comentario;
+    private Integer semana;
 
     @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "fecha_subida")
@@ -61,6 +62,14 @@ public class Evidencia {
         this.comentario = comentario;
     }
 
+    public Integer getSemana() {
+        return semana;
+    }
+
+    public void setSemana(Integer semana) {
+        this.semana = semana;
+    }
+
     public LocalDate getFechaSubida() {
         return fechaSubida;
     }
@@ -92,6 +101,7 @@ public class Evidencia {
                 ", nombreArchivo='" + nombreArchivo + '\'' +
                 ", urlArchivo='" + urlArchivo + '\'' +
                 ", comentario='" + comentario + '\'' +
+                ", semana=" + semana +
                 ", fechaSubida=" + fechaSubida +
                 ", estado=" + estado +
                 ", practica=" + practica +

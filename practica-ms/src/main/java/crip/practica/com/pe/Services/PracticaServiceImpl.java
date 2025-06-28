@@ -153,4 +153,12 @@ public class PracticaServiceImpl implements PracticaService {
 
         return dto;
     }
+
+    @Override
+    public DetallePracticaDTO obtenerDetallePorIdPersona(Long idPersona) {
+        Practica practica = practicaRepository.findTopByIdPersonaOrderByFechaInicioDesc(idPersona)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Práctica no encontrada para esta persona"));
+
+        return obtenerDetalleCompleto(practica.getId());
+    }
 }
