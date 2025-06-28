@@ -153,12 +153,27 @@ public class PracticaServiceImpl implements PracticaService {
 
         return dto;
     }
-
     @Override
-    public DetallePracticaDTO obtenerDetallePorIdPersona(Long idPersona) {
-        Practica practica = practicaRepository.findTopByIdPersonaOrderByFechaInicioDesc(idPersona)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Práctica no encontrada para esta persona"));
+    public boolean existePracticaActiva(Long idPersona) {
+        return practicaRepository.existsByIdPersonaAndEstado(idPersona, EstadoPractica.EN_PROCESO);
+    }
+    @Override
+    public DetallePracticaDTO obtenerDetallePorEstudiante(Long idPersona) {
+        Practica practica = practicaRepository
+                .findByIdPersonaAndEstado(idPersona, EstadoPractica.EN_PROCESO)
+                .orElseThrow(() -> new RuntimeException("No se encontró una práctica EN_PROCESO para el estudiante"));
 
-        return obtenerDetalleCompleto(practica.getId());
+        Postulacion postulacion = ofertaPostulacionClient.obtenerPostulacionPorId(practica.getIdPostulacion());
+
+        DetallePracticaDTO dto = new DetallePracticaDTO();
+        dto.setIdPractica(practica.getId());
+        dto.setFechaInicio(practica.getFechaInicio());
+        dto.setFechaFin(practica.getFechaFin());
+        dto.setEstado(practica.getEstado());
+        dto.setTituloOferta(postulacion.getOferta().getTitulo());
+        dto.setEmpresa(postulacion.getOferta().getEmpresa().getNombre());
+        dto.setModalidad(postulacion.getOferta().getModalidad());
+
+        return dto;
     }
 }

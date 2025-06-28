@@ -18,5 +18,6 @@ public interface PracticaService {
     Practica verificarYCrearPractica(Long idPostulacion);
     void deletePractica(Long id);
     DetallePracticaDTO obtenerDetalleCompleto(Long idPractica);
-    DetallePracticaDTO obtenerDetallePorIdPersona(Long idPersona);
+    boolean existePracticaActiva(Long idPersona);
+    DetallePracticaDTO obtenerDetallePorEstudiante(Long idPersona);
 }

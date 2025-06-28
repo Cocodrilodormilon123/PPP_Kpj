@@ -13,5 +13,6 @@ public interface PracticaRepository extends JpaRepository<Practica, Long> {
     List<Practica> findByIdPostulacion(Long idPostulacion);
     List<Practica> findByIdPersona(Long idPersona);
     boolean existsByIdPostulacion(Long idPostulacion);
-    Optional<Practica> findTopByIdPersonaOrderByFechaInicioDesc(Long idPersona);
+    boolean existsByIdPersonaAndEstado(Long idPersona, EstadoPractica estado);
+    Optional<Practica> findByIdPersonaAndEstado(Long idPersona, EstadoPractica estado);
 }
