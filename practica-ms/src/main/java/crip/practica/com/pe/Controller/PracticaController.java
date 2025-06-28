@@ -94,4 +94,13 @@ public class PracticaController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @Operation(summary = "Obtener detalle completo de la práctica")
+    @GetMapping("/detalle/{id}")
+    public ResponseEntity<?> getDetalleCompleto(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(practicaService.obtenerDetalleCompleto(id));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

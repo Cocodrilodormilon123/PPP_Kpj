@@ -2,6 +2,7 @@ package crip.practica.com.pe.Services;
 
 import crip.practica.com.pe.Entities.EstadoPractica;
 import crip.practica.com.pe.Entities.Practica;
+import crip.practica.com.pe.models.DetallePracticaDTO;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,4 +17,6 @@ public interface PracticaService {
     Optional<Practica> getPracticaById(Long id);
     Practica verificarYCrearPractica(Long idPostulacion);
     void deletePractica(Long id);
+    DetallePracticaDTO obtenerDetalleCompleto(Long idPractica);
+
 }

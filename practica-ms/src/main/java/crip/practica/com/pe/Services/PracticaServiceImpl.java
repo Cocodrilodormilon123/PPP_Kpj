@@ -4,6 +4,8 @@ import crip.practica.com.pe.Clients.OfertaPostulacionClient;
 import crip.practica.com.pe.Entities.EstadoPractica;
 import crip.practica.com.pe.Entities.Practica;
 import crip.practica.com.pe.Repository.PracticaRepository;
+import crip.practica.com.pe.models.DetallePracticaDTO;
+import crip.practica.com.pe.models.Postulacion;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -27,24 +29,18 @@ public class PracticaServiceImpl implements PracticaService {
 
     @Override
     public Practica savePractica(Practica practica) {
-        // Validación: debe tener id de persona
         if (practica.getIdPersona() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Debe especificar el ID de la persona.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe especificar el ID de la persona.");
         }
 
-        // Validación: debe tener id de postulación
         if (practica.getIdPostulacion() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "Debe especificar el ID de la postulación.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Debe especificar el ID de la postulación.");
         }
 
-        // Estado por defecto
         if (practica.getEstado() == null) {
             practica.setEstado(EstadoPractica.EN_PROCESO);
         }
 
-        // Fecha de inicio automática si no se define
         if (practica.getFechaInicio() == null) {
             practica.setFechaInicio(LocalDate.now());
         }
@@ -69,12 +65,10 @@ public class PracticaServiceImpl implements PracticaService {
                     if (estado == EstadoPractica.EN_PROCESO || estado == EstadoPractica.FINALIZADA) {
                         return practicaRepository.save(existingPractica);
                     } else {
-                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                                "Estado no permitido.");
+                        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Estado no permitido.");
                     }
                 })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Práctica no encontrada con ID: " + id));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Práctica no encontrada con ID: " + id));
     }
 
     @Override
@@ -110,8 +104,7 @@ public class PracticaServiceImpl implements PracticaService {
         if ("ACEPTADA".equals(estadoPostulacion) && "ACEPTADO".equals(estadoDocumento)) {
             boolean yaExiste = practicaRepository.existsByIdPostulacion(idPostulacion);
             if (yaExiste) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT,
-                        "Ya existe una práctica para esta postulación.");
+                throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya existe una práctica para esta postulación.");
             }
 
             Practica practica = new Practica();
@@ -137,4 +130,27 @@ public class PracticaServiceImpl implements PracticaService {
                         });
     }
 
+    @Override
+    public DetallePracticaDTO obtenerDetalleCompleto(Long idPractica) {
+        Practica practica = practicaRepository.findById(idPractica)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Práctica no encontrada"));
+
+        Postulacion postulacion = ofertaPostulacionClient.obtenerPostulacionPorId(practica.getIdPostulacion());
+
+        DetallePracticaDTO dto = new DetallePracticaDTO();
+        dto.setIdPractica(practica.getId());
+        dto.setFechaInicio(practica.getFechaInicio());
+        dto.setFechaFin(practica.getFechaFin());
+        dto.setEstado(practica.getEstado());
+
+        if (postulacion.getOferta() != null) {
+            dto.setTituloOferta(postulacion.getOferta().getTitulo());
+            dto.setModalidad(postulacion.getOferta().getModalidad());
+            if (postulacion.getOferta().getEmpresa() != null) {
+                dto.setEmpresa(postulacion.getOferta().getEmpresa().getNombre());
+            }
+        }
+
+        return dto;
+    }
 }
