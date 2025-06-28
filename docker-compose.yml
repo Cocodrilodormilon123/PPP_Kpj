@@ -1,17 +1,5 @@
 services:
 
-
-  db-security:
-    image: mysql:8.0
-    container_name: mysql-security
-    ports:
-      - "3307:3306"
-    environment:
-      MYSQL_DATABASE: 'security_db'
-      MYSQL_ROOT_PASSWORD: 'S3cur1tyM1cr0S3rv1c3'
-    networks:
-      - ppp-network
-
   db-personas:
     image: postgres:16.1
     container_name: postgres-personas

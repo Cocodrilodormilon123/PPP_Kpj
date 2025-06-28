@@ -9,13 +9,13 @@ spring:
     import: "optional:configserver:${CONFIG_SERVER_HOST}"
 
   datasource:
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+    url: ${of.url}
+    username: ${of.username}
+    password: ${of.password}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: ${db.maximum-pool-size}
-      connection-timeout: ${db.connection-timeout}
+      maximum-pool-size: ${of.maximum-pool-size}
+      connection-timeout: ${of.connection-timeout}
     initialization-mode: always
 
   jpa:
@@ -61,10 +61,3 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URL}
-
-db:
-  url: jdbc:postgresql://localhost:5434/ofertas_db
-  username: ofertas
-  password: Of3rt4sM1cr0s3rv1c3
-  maximum-pool-size: 5
-  connection-timeout: 20000

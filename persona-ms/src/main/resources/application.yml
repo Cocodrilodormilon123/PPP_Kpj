@@ -9,13 +9,13 @@ spring:
     import: "optional:configserver:${CONFIG_SERVER_HOST}"
 
   datasource:
-    url: ${db.url}
-    username: ${db.username}
-    password: ${db.password}
+    url: ${pe.url}
+    username: ${pe.username}
+    password: ${pe.password}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: ${db.maximum-pool-size}
-      connection-timeout: ${db.connection-timeout}
+      maximum-pool-size: ${pe.maximum-pool-size}
+      connection-timeout: ${pe.connection-timeout}
     initialization-mode: always
 
   jpa:
@@ -59,10 +59,3 @@ eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_URL}
-
-db:
-  url: jdbc:postgresql://localhost:5433/personas_db
-  username: personas
-  password: P3rs0n4sM1cr0s3rv1c3
-  maximum-pool-size: 5
-  connection-timeout: 20000

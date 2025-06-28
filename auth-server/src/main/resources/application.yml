@@ -17,10 +17,6 @@ spring:
       ddl-auto: update
     show-sql: true
 
-application:
-  jwt:
-    secret: S3cur1tyM1cr0S3rv1c3S3cur1tyM1cr0S3rv1c3
-
 server:
   port: 3030
   servlet:
