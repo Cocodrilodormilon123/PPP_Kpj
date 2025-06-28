@@ -20,5 +20,4 @@ public interface PracticaService {
     DetallePracticaDTO obtenerDetalleCompleto(Long idPractica);
     boolean existePracticaActiva(Long idPersona);
     DetallePracticaDTO obtenerDetallePorEstudiante(Long idPersona);
-
 }

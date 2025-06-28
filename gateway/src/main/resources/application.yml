@@ -5,15 +5,6 @@ spring:
   profiles:
     active: oauth2  # Cambia entre: eureka-off, eureka-on, oauth2
 
-  cloud:
-    gateway:
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins: "http://localhost:4200"
-            allowedMethods: "*"
-            allowedHeaders: "*"
-
 server:
   port: 4040
 
