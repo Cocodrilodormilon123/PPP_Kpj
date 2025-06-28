@@ -21,7 +21,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/practicaspp/evidencias")
-@CrossOrigin(origins = "*")
 public class EvidenciaController {
 
     private final EvidenciaService evidenciaService;
