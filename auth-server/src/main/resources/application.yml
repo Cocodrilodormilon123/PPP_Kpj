@@ -7,18 +7,6 @@ spring:
   config:
     import: "optional:configserver:${CONFIG_SERVER_HOST}"
 
-  datasource:
-    url: jdbc:mysql://localhost:3309/auth_db
-    username: authuser
-    password: AuthJWT2025
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-
 server:
   port: 3030
   servlet:
