@@ -3,7 +3,7 @@ spring:
     name: oferta-ms
 
   profiles:
-    default: default
+    default: prod
 
   config:
     import: "optional:configserver:${CONFIG_SERVER_HOST}"
@@ -49,15 +49,11 @@ logging:
 server:
   servlet:
     context-path: /oferta-ms
-  port: 0
+  port: 8082
 
 eureka:
   instance:
-    prefer-ip-address: false
-    hostname: localhost
     instance-id: "${spring.application.name}:${random.value}"
   client:
-    register-with-eureka: true
-    fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_URL}

@@ -3,10 +3,10 @@ spring:
     name: practica-ms
 
   profiles:
-    active: default
+    active: prod
 
   config:
-    import: "optional:configserver:http://localhost:7777"
+    import: "optional:configserver:${CONFIG_SERVER_HOST}"
 
   datasource:
     url: ${pr.url}
@@ -25,20 +25,16 @@ spring:
       hibernate.format_sql: true
 
 server:
-  port: 0
+  port: 8083
   servlet:
     context-path: /practica-ms
 
 eureka:
   instance:
-    prefer-ip-address: false
-    hostname: localhost
     instance-id: "${spring.application.name}:${random.value}"
   client:
-    register-with-eureka: true
-    fetch-registry: true
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URL}
 
 logging:
   pattern:

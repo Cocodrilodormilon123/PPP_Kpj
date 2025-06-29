@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: default
+    active: prod
   application:
     name: config-server
 
@@ -12,15 +12,14 @@ spring:
           default-label: main
           clone-on-start: true
           username: FENIXTTOBAN
-          password: ${GIT_TOKEN}
+          #password: ${GIT_TOKEN}
+          password: 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
 
 server:
   port: 7777
 
 eureka:
   instance:
-    prefer-ip-address: false
-    hostname: localhost
     instance-id: "${spring.application.name}:${random.value}"
   client:
     service-url:

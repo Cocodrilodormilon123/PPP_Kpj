@@ -9,13 +9,9 @@ server:
   port: 4040
 
 eureka:
-  client:
-    fetch-registry: true
-    register-with-eureka: true
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
   instance:
-    hostname: localhost         # 👈 fuerza uso de localhost
-    prefer-ip-address: false    # 👈 importante: no usar IP ni nombre completo
-    instance-id: ${spring.application.name}:${random.value}
+    instance-id: "${spring.application.name}:${random.value}"
+  client:
+    service-url:
+      #defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_URL}
