@@ -1,53 +1,163 @@
 services:
 
+  # BASES DE DATOS
   db-personas:
     image: postgres:16.1
-    container_name: postgres-personas
+    container_name: db-personas
+    restart: always
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_DB: 'personas_db'
-      POSTGRES_USER: 'personas'
-      POSTGRES_PASSWORD: 'P3rs0n4sM1cr0s3rv1c3'
+      POSTGRES_DB: personas_db
+      POSTGRES_USER: personas
+      POSTGRES_PASSWORD: P3rs0n4sM1cr0s3rv1c3
     networks:
       - ppp-network
 
   db-ofertas:
     image: postgres:16.1
-    container_name: postgres-ofertas
+    container_name: db-ofertas
+    restart: always
     ports:
       - "5434:5432"
     environment:
-      POSTGRES_DB: 'ofertas_db'
-      POSTGRES_USER: 'ofertas'
-      POSTGRES_PASSWORD: 'Of3rt4sM1cr0s3rv1c3'
+      POSTGRES_DB: ofertas_db
+      POSTGRES_USER: ofertas
+      POSTGRES_PASSWORD: Of3rt4sM1cr0s3rv1c3
     networks:
       - ppp-network
 
   db-practicas:
     image: postgres:16.1
-    container_name: postgres-practicas
+    container_name: db-practicas
+    restart: always
     ports:
       - "5435:5432"
     environment:
-      POSTGRES_DB: 'practicas_db'
-      POSTGRES_USER: 'practicas'
-      POSTGRES_PASSWORD: 'Pr4ct1c4sM1cr0s3rv1c3'
+      POSTGRES_DB: practicas_db
+      POSTGRES_USER: practicas
+      POSTGRES_PASSWORD: Pr4ct1c4sM1cr0s3rv1c3
     networks:
       - ppp-network
 
   db-auth-mysql:
     image: mysql:8.0
-    container_name: mysql-auth
+    container_name: db-auth-mysql
+    restart: always
     ports:
       - "3309:3306"
     environment:
-      MYSQL_DATABASE: 'auth_db'
-      MYSQL_USER: 'authuser'
-      MYSQL_PASSWORD: 'AuthJWT2025'
-      MYSQL_ROOT_PASSWORD: 'RootAuthJWT2025'
+      MYSQL_DATABASE: auth_db
+      MYSQL_USER: authuser
+      MYSQL_PASSWORD: AuthJWT2025
+      MYSQL_ROOT_PASSWORD: RootAuthJWT2025
     networks:
       - ppp-network
+
+  # SERVICIOS
+
+  ms-registry-server:
+    image: ms-registry-server:latest
+    build: ./registry-server
+    container_name: ms-registry-server
+    restart: always
+    ports:
+      - "8761:8761"
+    networks:
+      - ppp-network
+
+  ms-config-server:
+    image: ms-config-server:latest
+    build: ./config-server
+    container_name: ms-config-server
+    restart: always
+    ports:
+      - "7777:7777"
+    depends_on:
+      - ms-registry-server
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+    networks:
+      - ppp-network
+
+  ms-persona:
+    image: ms-persona:latest
+    build: ./persona-ms
+    container_name: ms-persona
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - ms-config-server
+      - db-personas
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+      CONFIG_SERVER_HOST: http://ms-config-server:7777
+    networks:
+      - ppp-network
+      
+  ms-oferta:
+    image: ms-oferta:latest
+    build: ./oferta-ms
+    container_name: ms-oferta
+    restart: always
+    ports:
+      - "8082:8082"
+    depends_on:
+      - ms-config-server
+      - db-ofertas
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+      CONFIG_SERVER_HOST: http://ms-config-server:7777
+    networks:
+      - ppp-network
+
+  ms-practica:
+    image: ms-practica:latest
+    build: ./practica-ms
+    container_name: ms-practica
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - ms-config-server
+      - db-practicas
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+      CONFIG_SERVER_HOST: http://ms-config-server:7777
+    networks:
+      - ppp-network
+
+  ms-auth:
+    image: ms-auth-server:latest
+    build: ./auth-server
+    container_name: ms-auth
+    restart: always
+    ports:
+      - "3030:3030"
+    depends_on:
+      - ms-config-server
+      - db-auth-mysql
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+      CONFIG_SERVER_HOST: http://ms-config-server:7777
+    networks:
+      - ppp-network
+
+  ms-gateway:
+    image: ms-gateway:latest
+    build: ./gateway
+    container_name: ms-gateway
+    restart: always
+    ports:
+      - "4040:4040"
+    depends_on:
+      - ms-config-server
+    environment:
+      EUREKA_URL: http://ms-registry-server:8761/eureka/
+    networks:
+      - ppp-network
+      
 networks:
   ppp-network:
     driver: bridge

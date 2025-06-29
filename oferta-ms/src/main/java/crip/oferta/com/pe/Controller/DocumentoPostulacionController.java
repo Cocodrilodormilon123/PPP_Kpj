@@ -7,6 +7,7 @@ import crip.oferta.com.pe.Services.DocumentoPostulacionService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +76,7 @@ public class DocumentoPostulacionController {
 
     @Operation(summary = "Descargar plantilla solo si la postulación está en estado EN_REVISION")
     @GetMapping("/descargar-plantilla/{idPostulacion}")
-    public ResponseEntity<?> descargarPlantilla(@PathVariable Long idPostulacion) throws IOException {
+    public ResponseEntity<?> descargarPlantilla(@PathVariable Long idPostulacion) {
         return postulacionRepository.findById(idPostulacion).map(postulacion -> {
             if (postulacion.getEstado() != EstadoPostulacion.EN_REVISION) {
                 return ResponseEntity.status(403)
@@ -83,8 +84,7 @@ public class DocumentoPostulacionController {
             }
 
             try {
-                Path path = Paths.get("src/main/resources/static/plantillas/formato_postulacion.pdf");
-                Resource resource = new UrlResource(path.toUri());
+                ClassPathResource resource = new ClassPathResource("static/plantillas/formato_postulacion.pdf");
 
                 if (!resource.exists()) {
                     return ResponseEntity.internalServerError().body("Archivo no encontrado");
@@ -95,7 +95,7 @@ public class DocumentoPostulacionController {
                         .contentType(MediaType.APPLICATION_PDF)
                         .body(resource);
 
-            } catch (IOException e) {
+            } catch (Exception e) {
                 return ResponseEntity.internalServerError().body("Error al acceder al archivo");
             }
 

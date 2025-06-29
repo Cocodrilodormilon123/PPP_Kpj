@@ -46,7 +46,7 @@ public class PersonaServiceImpl implements PersonaService {
 
             try {
                 restTemplate.postForObject(
-                        "http://localhost:3030/auth-server/auth/register",
+                        "http://ms-auth:3030/auth-server/auth/register",
                         authRequest,
                         Void.class
                 );
